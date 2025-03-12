@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkSnap</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* 全局樣式 */
+        body {
+          text-align: center;
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          padding: 20px;
+          margin: 0;
+          overflow: hidden;
+        }
+
+        #capture {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 780px;
+            height: 48px;
+        }
+
+        #background {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #timestamp {
+          position: absolute;
+          bottom: 0px;
+          right: 21px;
+          color: white;
+          padding: 5px 12px;
+          font-size: 28px;
+          border-radius: 5px;
+        }
+
+        button {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 18px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            background-color: #e68401;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>WorkSnap</h2>
+    <!-- 這個區域將被轉成圖片 -->
+    <div id="capture">
+        <img id="background" src="background.jpg" alt="背景圖片">
+        <div id="timestamp"></div>
+    </div>
+
+    <br>
+    <button onclick="saveImage()">👆Download</button>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const weekdays = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+
+            let month = now.getMonth() + 1; // 月份從 0 開始
+            let day = now.getDate();
+            let weekday = weekdays[now.getDay()];
+
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let period = hours >= 12 ? "下午" : "上午";
+
+            hours = hours % 12 || 12; // 轉換為 12 小時制
+            minutes = minutes.toString().padStart(2, "0"); // 確保分鐘為兩位數
+
+            const formattedTime = `${month}月${day}日 ${weekday} ${period} ${hours}:${minutes}`;
+            document.getElementById("timestamp").textContent = formattedTime;
+        }
+
+        function saveImage() {
+            updateTime(); // 確保時間是最新的
+            html2canvas(document.getElementById("capture"), { useCORS: true }).then(canvas => {
+                const now = new Date();
+                const formattedTime = now.getFullYear() + "-" +
+                                    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                                    String(now.getDate()).padStart(2, "0") + "_" +
+                                    String(now.getHours()).padStart(2, "0") + "-" +
+                                    String(now.getMinutes()).padStart(2, "0") + "-" +
+                                    String(now.getSeconds()).padStart(2, "0");
+                
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = `screenshot_${formattedTime}.png`;
+                link.click();
+            });
+        }
+
+        // 每秒更新時間
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+
+</body>
+</html>
+
