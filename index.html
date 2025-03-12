@@ -6,25 +6,21 @@
     <title>WorkSnap</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* 全局樣式 */
         body {
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             padding: 20px;
             margin: 0;
-            overflow: hidden;
         }
 
         .capture {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: relative;
+            margin: 20px auto;
             display: none;
         }
 
-        #capture1 {
+        #capture1, #preview {
             width: 780px;
             height: 48px;
         }
@@ -54,7 +50,6 @@
             right: 28px;
             padding: 25px 0px;
             font-size: 24px;
-            background: #e8e4dd;
             color: #2a2623;
         }
 
@@ -85,91 +80,111 @@
         button:hover {
             opacity: 0.8;
         }
+
+        /* 预览图片区域 */
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .preview {
+            display: none;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <h2>WorkSnap</h2>
 
     <div class="btn-container">
-        <button class="btn1" onclick="showVersion(1)">切換截圖1</button>
-        <button class="btn2" onclick="showVersion(2)">切換截圖2</button>
+        <button class="btn1" onclick="showVersion(1)">切换截图1</button>
+        <button class="btn2" onclick="showVersion(2)">切换截图2</button>
     </div>
 
-    <!-- 截圖1 -->
     <div id="capture1" class="capture">
         <img class="background" src="background1.jpg" alt="">
         <div id="timestamp1" class="timestamp"></div>
     </div>
 
-    <!-- 截圖2 -->
     <div id="capture2" class="capture">
         <img class="background" src="background2.jpg" alt="">
         <div id="timestamp2" class="timestamp"></div>
     </div>
 
     <br>
-    <button class="btn-download" onclick="saveImage()">👆🏼 下載當前圖片</button>
+    <button class="btn-download" onclick="saveImage()">👀 下載當前圖片</button>
+
+    <div class="preview-container">
+        <h3>👇 长按保存图片</h3>
+        <img id="preview" class="preview" src="">
+    </div>
 
     <script>
-        let currentVersion = 1; // 預設顯示版本 1
+        let currentVersion = 1;
 
         function showVersion(version) {
             currentVersion = version;
             document.getElementById("capture1").style.display = version === 1 ? "block" : "none";
             document.getElementById("capture2").style.display = version === 2 ? "block" : "none";
+            generatePreview();
         }
 
         function updateTime() {
             const now = new Date();
             const weekdays = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
-
-            let month = now.getMonth() + 1;
-            let day = now.getDate();
-            let weekday = weekdays[now.getDay()];
-
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            let period = hours >= 12 ? "下午" : "上午";
-
-            hours = hours % 12 || 12;
-            minutes = minutes.toString().padStart(2, "0");
-
-            const formattedTime = `${month}月${day}日 ${weekday} ${period} ${hours}:${minutes}`;
-
+            let formattedTime = `${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]} ${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
             document.getElementById("timestamp1").textContent = formattedTime;
             document.getElementById("timestamp2").textContent = formattedTime;
         }
 
         function saveImage() {
             updateTime();
-
-            const captureElement = currentVersion === 1 ? document.getElementById("capture1") : document.getElementById("capture2");
+            const captureElement = document.getElementById(currentVersion === 1 ? "capture1" : "capture2");
 
             html2canvas(captureElement, { useCORS: true }).then(canvas => {
-                const now = new Date();
-                const formattedTime = now.getFullYear() + "-" +
-                                    String(now.getMonth() + 1).padStart(2, "0") + "-" +
-                                    String(now.getDate()).padStart(2, "0") + "_" +
-                                    String(now.getHours()).padStart(2, "0") + "-" +
-                                    String(now.getMinutes()).padStart(2, "0") + "-" +
-                                    String(now.getSeconds()).padStart(2, "0");
+                const fileName = prompt("請輸入檔案名稱", `WorkSnap_${new Date().toISOString().replace(/[:.]/g, "-")}.png`);
+                if (!fileName) return;
 
                 const link = document.createElement("a");
                 link.href = canvas.toDataURL("image/png");
-                link.download = `screenshot_${formattedTime}.png`;
+                link.download = fileName;
                 link.click();
             });
         }
 
-        // 每秒更新時間
+        function generatePreview() {
+            updateTime();
+            const captureElement = document.getElementById(currentVersion === 1 ? "capture1" : "capture2");
+            const previewImage = document.getElementById("preview");
+
+            html2canvas(captureElement, { useCORS: true }).then(canvas => {
+                previewImage.src = canvas.toDataURL("image/png");
+                previewImage.style.display = "block";
+
+                // 🔹 自適應寬高，防止變形
+                previewImage.style.width = captureElement.clientWidth + "px";
+                previewImage.style.height = captureElement.clientHeight + "px";
+
+                // 讓預覽圖點擊後可下載
+                previewImage.onclick = () => {
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+                    const fileName = prompt("請輸入檔案名稱", `WorkSnap_${timestamp}.png`);
+                    if (!fileName) return;
+
+                    const link = document.createElement("a");
+                    link.href = previewImage.src;
+                    link.download = fileName;
+                    link.click();
+                };
+            });
+        }
+
+
         setInterval(updateTime, 1000);
         updateTime();
-
-        // 預設顯示 WorkSnap 1
         showVersion(1);
     </script>
-
 </body>
 </html>
-
-
