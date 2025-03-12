@@ -39,7 +39,7 @@
         .timestamp {
             position: absolute;
             bottom: 0px;
-            right: 10px;
+            right: 50px;
             color: white;
             padding: 5px 12px;
             font-size: 28px;
@@ -47,7 +47,7 @@
         }
 
         #timestamp2 {
-            right: 28px;
+            right: 55px;
             padding: 25px 0px;
             font-size: 24px;
             color: #2a2623;
@@ -86,13 +86,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             margin-top: 20px;
+            width: 100%;
         }
 
+        /* 讓圖片適應不同螢幕 */
         .preview {
             display: none;
             margin-top: 10px;
+            max-width: 90%;
+            height: auto;
         }
+
     </style>
 </head>
 <body>
@@ -133,7 +139,7 @@
 
         function updateTime() {
             const now = new Date();
-            const weekdays = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+            const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
             let formattedTime = `${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]} ${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
             document.getElementById("timestamp1").textContent = formattedTime;
             document.getElementById("timestamp2").textContent = formattedTime;
@@ -167,9 +173,9 @@
                 previewImage.src = canvas.toDataURL("image/png");
                 previewImage.style.display = "block";
 
-                // 🔹 自適應寬高，防止變形
-                previewImage.style.width = captureElement.clientWidth + "px";
-                previewImage.style.height = captureElement.clientHeight + "px";
+                // 🔹 讓手機預覽圖片寬度適應不同裝置
+                previewImage.style.width = "90%";
+                previewImage.style.height = "auto";
 
                 // 🔹 生成時間戳 (YYYY-MM-DD_HH-MM-SS)
                 const now = new Date();
@@ -183,15 +189,9 @@
                 const fileName = `screenshot_${timestamp}.png`;
 
                 // 🔹 手機長按下載時使用正確的檔名
-                const link = document.createElement("a");
-                link.href = previewImage.src;
-                link.download = fileName;
-                document.body.appendChild(link);
                 previewImage.setAttribute("download", fileName);
-                document.body.removeChild(link);
             });
         }
-
 
         setInterval(updateTime, 1000);
         updateTime();
