@@ -142,11 +142,15 @@
         function saveImage() {
             updateTime();
             const captureElement = document.getElementById(currentVersion === 1 ? "capture1" : "capture2");
-
             html2canvas(captureElement, { useCORS: true }).then(canvas => {
-                const fileName = prompt("請輸入檔案名稱", `WorkSnap_${new Date().toISOString().replace(/[:.]/g, "-")}.png`);
-                if (!fileName) return;
-
+                const now = new Date();
+                const timestamp = now.getFullYear() + "-" +
+                                String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                                String(now.getDate()).padStart(2, "0") + "_" +
+                                String(now.getHours()).padStart(2, "0") + "-" +
+                                String(now.getMinutes()).padStart(2, "0") + "-" +
+                                String(now.getSeconds()).padStart(2, "0");
+                const fileName = `screenshot_${timestamp}.png`; // 檔名格式 screenshot_YYYY-MM-DD_HH-MM-SS.png
                 const link = document.createElement("a");
                 link.href = canvas.toDataURL("image/png");
                 link.download = fileName;
@@ -167,17 +171,24 @@
                 previewImage.style.width = captureElement.clientWidth + "px";
                 previewImage.style.height = captureElement.clientHeight + "px";
 
-                // 讓預覽圖點擊後可下載
-                previewImage.onclick = () => {
-                    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-                    const fileName = prompt("請輸入檔案名稱", `WorkSnap_${timestamp}.png`);
-                    if (!fileName) return;
+                // 🔹 生成時間戳 (YYYY-MM-DD_HH-MM-SS)
+                const now = new Date();
+                const timestamp = now.getFullYear() + "-" +
+                                String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                                String(now.getDate()).padStart(2, "0") + "_" +
+                                String(now.getHours()).padStart(2, "0") + "-" +
+                                String(now.getMinutes()).padStart(2, "0") + "-" +
+                                String(now.getSeconds()).padStart(2, "0");
 
-                    const link = document.createElement("a");
-                    link.href = previewImage.src;
-                    link.download = fileName;
-                    link.click();
-                };
+                const fileName = `screenshot_${timestamp}.png`;
+
+                // 🔹 手機長按下載時使用正確的檔名
+                const link = document.createElement("a");
+                link.href = previewImage.src;
+                link.download = fileName;
+                document.body.appendChild(link);
+                previewImage.setAttribute("download", fileName);
+                document.body.removeChild(link);
             });
         }
 
