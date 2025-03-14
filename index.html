@@ -43,8 +43,26 @@
 
         .timestamp {
             position: absolute;
+            bottom: 0px;
+            right: 50px;
+            color: white;
+            padding: 5px 12px;
+            font-size: 28px;
+            border-radius: 5px;
+        }
+
+        #timestamp2 {
+            right: 55px;
+            padding: 25px 0px;
+            font-size: 24px;
+            color: #2a2623;
+        }
+
+        /* 截图3的时间样式 */
+        #timestamp3 {
+            position: absolute;
             bottom: 2px;
-            right: 18px;
+            right: 14px;
             line-height: 18px;
             color: white;
             text-align: center;
@@ -68,7 +86,7 @@
 
         .btn1 { border: 2px solid #e68401; }
         .btn2 { border: 2px solid #a648e5; }
-        .btn3 { border: 2px solid #01a6e6; }
+        .btn3 { border: 2px solid #018be6; }
         .btn-download { 
             background-color: #8b01e6; 
             color: white;
@@ -108,25 +126,22 @@
         <button class="btn3" onclick="showVersion(3)">切换截图3</button>
     </div>
 
+    <!-- 截图1 -->
     <div id="capture1" class="capture">
         <img class="background" src="background1.jpg" alt="">
-        <div id="timestamp1" class="timestamp">
-            <div class="time"></div>
-            <div class="date"></div>
-        </div>
+        <div id="timestamp1" class="timestamp"></div>
     </div>
 
+    <!-- 截图2 -->
     <div id="capture2" class="capture">
         <img class="background" src="background2.jpg" alt="">
-        <div id="timestamp2" class="timestamp">
-            <div class="time"></div>
-            <div class="date"></div>
-        </div>
+        <div id="timestamp2" class="timestamp"></div>
     </div>
 
+    <!-- 截图3 -->
     <div id="capture3" class="capture">
         <img class="background" src="background3.jpg" alt="">
-        <div id="timestamp3" class="timestamp">
+        <div id="timestamp3">
             <div class="time"></div>
             <div class="date"></div>
         </div>
@@ -148,6 +163,7 @@
             document.getElementById("capture1").style.display = version === 1 ? "block" : "none";
             document.getElementById("capture2").style.display = version === 2 ? "block" : "none";
             document.getElementById("capture3").style.display = version === 3 ? "block" : "none";
+            updateTime();
             generatePreview();
         }
 
@@ -156,14 +172,12 @@
             const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
             const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-            const dateWithWeekday = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${weekdays[now.getDay()]}`;
-            const dateWithoutWeekday = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+            const dateWithWeekday = `${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
+            const dateWithoutWeekday = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-            // 截图1和2显示时间 + 日期 + 周几
-            document.querySelectorAll("#timestamp1 .time, #timestamp2 .time").forEach(el => el.textContent = timeStr);
-            document.querySelectorAll("#timestamp1 .date, #timestamp2 .date").forEach(el => el.textContent = dateWithWeekday);
+            document.getElementById("timestamp1").textContent = `${dateWithWeekday} ${timeStr}`;
+            document.getElementById("timestamp2").textContent = `${dateWithWeekday} ${timeStr}`;
 
-            // 截图3显示时间 + 日期（不显示周几）
             document.querySelector("#timestamp3 .time").textContent = timeStr;
             document.querySelector("#timestamp3 .date").textContent = dateWithoutWeekday;
         }
@@ -171,7 +185,6 @@
         function saveImage() {
             updateTime();
             const captureElement = document.getElementById(`capture${currentVersion}`);
-
             html2canvas(captureElement, { useCORS: true }).then(canvas => {
                 const now = new Date();
                 const timestamp = now.getFullYear() + "-" +
@@ -181,7 +194,6 @@
                                 String(now.getMinutes()).padStart(2, "0") + "-" +
                                 String(now.getSeconds()).padStart(2, "0");
                 const fileName = `screenshot_${timestamp}.png`;
-
                 const link = document.createElement("a");
                 link.href = canvas.toDataURL("image/png");
                 link.download = fileName;
