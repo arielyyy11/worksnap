@@ -20,8 +20,6 @@
             display: none;
         }
 
-        #capture1 { width: 780px; height: 48px; }
-        #capture2 { width: 846px; height: 84px; }
         #capture3 { width: 427px; height: 39px; }
         #capture4 { width: 920px; height: 48px; }
 
@@ -29,22 +27,6 @@
             width: 100%;
             height: 100%;
             display: block;
-        }
-
-        .timestamp {
-            position: absolute;
-            bottom: 0px;
-            right: 50px;
-            color: white;
-            padding: 5px 12px;
-            font-size: 28px;
-        }
-
-        #timestamp2 {
-            right: 55px;
-            padding: 25px 0px;
-            font-size: 24px;
-            color: #2a2623;
         }
 
         #timestamp3 {
@@ -80,12 +62,10 @@
             margin: 5px;
         }
 
-        .btn1 { border: 2px solid #e68401; }
-        .btn2 { border: 2px solid #a648e5; }
         .btn3 { border: 2px solid #018be6; }
         .btn4 { border: 2px solid #009688; }
-        .btn-download { 
-            background-color: #8b01e6; 
+        .btn-download {
+            background-color: #8b01e6;
             color: white;
             border-radius: 5px;
             width: 200px;
@@ -110,27 +90,14 @@
             width: 90%;
             height: auto;
         }
-
     </style>
 </head>
 <body>
     <h2>WorkSnap</h2>
 
     <div class="btn-container">
-        <button class="btn1" onclick="showVersion(1)">切換截圖1</button>
-        <button class="btn2" onclick="showVersion(2)">切換截圖2</button>
         <button class="btn3" onclick="showVersion(3)">切換截圖3</button>
         <button class="btn4" onclick="showVersion(4)">切換截圖4</button>
-    </div>
-
-    <div id="capture1" class="capture">
-        <img class="background" src="background1.jpg" alt="">
-        <div id="timestamp1" class="timestamp"></div>
-    </div>
-
-    <div id="capture2" class="capture">
-        <img class="background" src="background2.jpg" alt="">
-        <div id="timestamp2" class="timestamp"></div>
     </div>
 
     <div id="capture3" class="capture">
@@ -155,11 +122,11 @@
     </div>
 
     <script>
-        let currentVersion = 1;
+        let currentVersion = 3;
 
         function showVersion(version) {
             currentVersion = version;
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 3; i <= 4; i++) {
                 document.getElementById(`capture${i}`).style.display = (i === version) ? "block" : "none";
             }
             updateTime();
@@ -168,25 +135,16 @@
 
         function updateTime() {
             const now = new Date();
-            const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
             const weekdaysEN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             const monthsEN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
             const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-            const dateWithWeekday = `${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
             const dateISO = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
-
-            // 截图1&2
-            document.getElementById("timestamp1").textContent = `${dateWithWeekday} ${timeStr}`;
-            document.getElementById("timestamp2").textContent = `${dateWithWeekday} ${timeStr}`;
-
-            // 截图3（上下两排）
+            
             document.querySelector("#timestamp3 .time").textContent = timeStr;
             document.querySelector("#timestamp3 .date").textContent = dateISO;
-
-            // 截图4（英文格式）
+            
             document.getElementById("timestamp4").textContent = `${weekdaysEN[now.getDay()]} ${monthsEN[now.getMonth()]} ${now.getDate()}  ${timeStr}`;
-
         }
 
         function saveImage() {
@@ -214,7 +172,7 @@
 
         setInterval(updateTime, 1000);
         updateTime();
-        showVersion(1);
+        showVersion(3);
     </script>
 </body>
 </html>
