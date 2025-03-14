@@ -20,20 +20,10 @@
             display: none;
         }
 
-        #capture1, #preview {
-            width: 780px;
-            height: 48px;
-        }
-
-        #capture2 {
-            width: 846px;
-            height: 84px;
-        }
-
-        #capture3 {
-            width: 427px;
-            height: 39px;
-        }
+        #capture1 { width: 780px; height: 48px; }
+        #capture2 { width: 846px; height: 84px; }
+        #capture3 { width: 427px; height: 39px; }
+        #capture4 { width: 920px; height: 48px; }
 
         .background {
             width: 100%;
@@ -48,7 +38,6 @@
             color: white;
             padding: 5px 12px;
             font-size: 28px;
-            border-radius: 5px;
         }
 
         #timestamp2 {
@@ -58,7 +47,6 @@
             color: #2a2623;
         }
 
-        /* 截图3的时间样式 */
         #timestamp3 {
             position: absolute;
             bottom: 2px;
@@ -67,7 +55,15 @@
             color: white;
             text-align: center;
             font-size: 12px;
-            border-radius: 5px;
+        }
+
+        #timestamp4 {
+            position: absolute;
+            bottom: 9px;
+            right: 40px;
+            font-size: 25px;
+            color: #181c1f;
+            letter-spacing: 1px;
         }
 
         .btn-container {
@@ -87,6 +83,7 @@
         .btn1 { border: 2px solid #e68401; }
         .btn2 { border: 2px solid #a648e5; }
         .btn3 { border: 2px solid #018be6; }
+        .btn4 { border: 2px solid #009688; }
         .btn-download { 
             background-color: #8b01e6; 
             color: white;
@@ -98,7 +95,6 @@
             opacity: 0.8;
         }
 
-        /* 预览图片区域 */
         .preview-container {
             display: flex;
             flex-direction: column;
@@ -111,7 +107,7 @@
         .preview {
             display: none;
             margin-top: 10px;
-            max-width: 90%;
+            width: 90%;
             height: auto;
         }
 
@@ -121,24 +117,22 @@
     <h2>WorkSnap</h2>
 
     <div class="btn-container">
-        <button class="btn1" onclick="showVersion(1)">切换截图1</button>
-        <button class="btn2" onclick="showVersion(2)">切换截图2</button>
-        <button class="btn3" onclick="showVersion(3)">切换截图3</button>
+        <button class="btn1" onclick="showVersion(1)">切換截圖1</button>
+        <button class="btn2" onclick="showVersion(2)">切換截圖2</button>
+        <button class="btn3" onclick="showVersion(3)">切換截圖3</button>
+        <button class="btn4" onclick="showVersion(4)">切換截圖4</button>
     </div>
 
-    <!-- 截图1 -->
     <div id="capture1" class="capture">
         <img class="background" src="background1.jpg" alt="">
         <div id="timestamp1" class="timestamp"></div>
     </div>
 
-    <!-- 截图2 -->
     <div id="capture2" class="capture">
         <img class="background" src="background2.jpg" alt="">
         <div id="timestamp2" class="timestamp"></div>
     </div>
 
-    <!-- 截图3 -->
     <div id="capture3" class="capture">
         <img class="background" src="background3.jpg" alt="">
         <div id="timestamp3">
@@ -147,11 +141,16 @@
         </div>
     </div>
 
+    <div id="capture4" class="capture">
+        <img class="background" src="background4.jpg" alt="">
+        <div id="timestamp4"></div>
+    </div>
+
     <br>
     <button class="btn-download" onclick="saveImage()">👀 下載當前圖片</button>
 
     <div class="preview-container">
-        <h3>👇 长按保存图片</h3>
+        <h3>👇 長按保存圖片</h3>
         <img id="preview" class="preview" src="">
     </div>
 
@@ -160,9 +159,9 @@
 
         function showVersion(version) {
             currentVersion = version;
-            document.getElementById("capture1").style.display = version === 1 ? "block" : "none";
-            document.getElementById("capture2").style.display = version === 2 ? "block" : "none";
-            document.getElementById("capture3").style.display = version === 3 ? "block" : "none";
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`capture${i}`).style.display = (i === version) ? "block" : "none";
+            }
             updateTime();
             generatePreview();
         }
@@ -170,30 +169,31 @@
         function updateTime() {
             const now = new Date();
             const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+            const weekdaysEN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const monthsEN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
             const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
             const dateWithWeekday = `${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
-            const dateWithoutWeekday = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+            const dateISO = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
 
+            // 截图1&2
             document.getElementById("timestamp1").textContent = `${dateWithWeekday} ${timeStr}`;
             document.getElementById("timestamp2").textContent = `${dateWithWeekday} ${timeStr}`;
 
+            // 截图3（上下两排）
             document.querySelector("#timestamp3 .time").textContent = timeStr;
-            document.querySelector("#timestamp3 .date").textContent = dateWithoutWeekday;
+            document.querySelector("#timestamp3 .date").textContent = dateISO;
+
+            // 截图4（英文格式）
+            document.getElementById("timestamp4").textContent = `${weekdaysEN[now.getDay()]} ${monthsEN[now.getMonth()]} ${now.getDate()}  ${timeStr}`;
+
         }
 
         function saveImage() {
             updateTime();
             const captureElement = document.getElementById(`capture${currentVersion}`);
             html2canvas(captureElement, { useCORS: true }).then(canvas => {
-                const now = new Date();
-                const timestamp = now.getFullYear() + "-" +
-                                String(now.getMonth() + 1).padStart(2, "0") + "-" +
-                                String(now.getDate()).padStart(2, "0") + "_" +
-                                String(now.getHours()).padStart(2, "0") + "-" +
-                                String(now.getMinutes()).padStart(2, "0") + "-" +
-                                String(now.getSeconds()).padStart(2, "0");
-                const fileName = `screenshot_${timestamp}.png`;
+                const fileName = `screenshot_${Date.now()}.png`;
                 const link = document.createElement("a");
                 link.href = canvas.toDataURL("image/png");
                 link.download = fileName;
@@ -209,8 +209,6 @@
             html2canvas(captureElement, { useCORS: true }).then(canvas => {
                 previewImage.src = canvas.toDataURL("image/png");
                 previewImage.style.display = "block";
-                previewImage.style.width = "90%";
-                previewImage.style.height = "auto";
             });
         }
 
@@ -220,4 +218,5 @@
     </script>
 </body>
 </html>
+
 
